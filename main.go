@@ -44,7 +44,7 @@ func roundRobinBalance(w http.ResponseWriter, r *http.Request) {
 
 		server.Mutex.Lock()
 		alive := server.Alive
-		fmt.Printf("server : %s, alive %v", server.Url, server.Alive)
+		fmt.Printf("server : %s, alive %v\n", server.Url, server.Alive)
 		server.Mutex.Unlock()
 		if alive {
 			break
@@ -62,9 +62,10 @@ func roundRobinBalance(w http.ResponseWriter, r *http.Request) {
 }
 
 func (server *ServerStatus) HealthCheck() {
+	fmt.Printf("health check for url %s\n",server.Url.String())
 	resp, err := http.Get(server.Url.String())
 	if err != nil {
-		fmt.Printf("health check failed for %s\n", server.Url.String())
+		fmt.Printf("health check failed for %s \n", server.Url.String())
 		server.Mutex.Lock()
 		server.Alive = false
 		server.Mutex.Unlock()
@@ -82,9 +83,10 @@ func healthCheckWorker(server *ServerStatus, done <-chan struct{}, interval time
 		select {
 		case <-done:
 			ticker.Stop()
-			fmt.Printf("stopping health check %v", server.Url.String())
+			fmt.Printf("stopping health check %v\n", server.Url.String())
 			return
 		case <-ticker.C:
+			fmt.Printf("health check for %s\n", server.Url.String())
 			server.HealthCheck()
 		}
 
