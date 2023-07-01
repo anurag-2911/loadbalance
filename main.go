@@ -20,7 +20,7 @@ func main() {
 	fmt.Println("load balancer running")
 	done := make(chan struct{})
 	for _, s := range servers {
-		go healthCheckWorker(s, done, 10*time.Second)
+		go healthCheckWorker(s, done, 60*time.Second)
 	}
 	http.HandleFunc("/", roundRobinBalance)
 	http.ListenAndServe(":8080", nil)
